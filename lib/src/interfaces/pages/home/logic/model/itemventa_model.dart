@@ -34,9 +34,6 @@ class DataSourceVenta extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(
-          Text(venta.reference!),
-        ),
         DataCell(Container(
           constraints: const BoxConstraints(minWidth: 150, maxWidth: 250),
           child: SingleChildScrollView(

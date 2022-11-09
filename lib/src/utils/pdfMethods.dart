@@ -168,6 +168,13 @@ class PdfMethods {
     var empresaDireccion = await ApiMethods().getDireccionXRuc(empresa!);
     var hora = await DateTimeMethods().getTime();
     var fecha = await DateTimeMethods().getDate();
+    if(tipoPdf == 'TrasS'){
+      tipoPdf = 'Traslado de Salida';
+    } else if (tipoPdf == 'TrasE'){
+      tipoPdf = 'Traslado de Entrada';
+    } else if (tipoPdf == 'InvF'){
+      tipoPdf = 'Inventario Fisico';
+    }
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -217,7 +224,7 @@ class PdfMethods {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text('Datos del Cliente',
+                pw.Text('Datos del Movimiento',
                     style: pw.TextStyle(font: ttf, fontSize: 20)),
               ],
             ),
@@ -246,20 +253,11 @@ class PdfMethods {
                   ]),
             ],
           ),
-          pw.Header(
-            level: 1,
-            child: pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Text('Total: ${listaTemporal.map((e) => e.quantity).reduce((value, element) => value! + element!)}',
-                    style: pw.TextStyle(font: ttf, fontSize: 20)),
-              ],
-            ),
-          ),
           pw.Center(
               child: pw.Column(children: [
+            pw.SizedBox(height: 10),
             pw.BarcodeWidget(
-              barcode: pw.Barcode.code39(),
+              barcode: pw.Barcode.qrCode(),
               data: idMovimiento,
               width: 200,
               height: 80,

@@ -85,7 +85,7 @@ class AlertMethods {
       Get.back();
     });
   }
-
+//20605502718	mysql-93553-0.cloudclusters.net	admin	FgqNSrft	APP-VCTO	10046
   void mostrarDato(String code) {
     showDialog(
         context: Get.context!,
@@ -98,7 +98,7 @@ class AlertMethods {
                 style: const TextStyle(color: Colors.black),
                 children: <TextSpan>[
                   TextSpan(
-                    text: '$code',
+                    text: code,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green,

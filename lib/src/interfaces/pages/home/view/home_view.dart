@@ -10,6 +10,7 @@ import 'package:app1c/src/services/itemMethods.dart';
 import 'package:app1c/src/services/movementMethods.dart';
 import 'package:app1c/src/utils/alertMethods.dart';
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stts;
 import '../../../../connection/external_connection.dart';
@@ -772,27 +773,6 @@ class _HomeViewState extends State<HomeView> {
                               sortColumnIndex: 0,
                               columns: [
                                 DataColumn(
-                                  label: Text('Referencia',
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              35)),
-                                  numeric: false,
-                                  onSort: (columnIndex, ascending) {
-                                    setState(() {
-                                      sort = !sort;
-                                    });
-                                    if (sort) {
-                                      listItemsVenta.sort((a, b) =>
-                                          a.reference!.compareTo(b.reference!));
-                                    } else {
-                                      listItemsVenta.sort((a, b) =>
-                                          b.reference!.compareTo(a.reference!));
-                                    }
-                                  },
-                                ),
-                                DataColumn(
                                   label: Text('Nombre del Item',
                                       style: TextStyle(
                                           fontSize: MediaQuery.of(context)
@@ -966,22 +946,6 @@ class _HomeViewState extends State<HomeView> {
                               sortColumnIndex: 0,
                               columns: [
                                 DataColumn(
-                                  label: const Icon(Icons.redeem),
-                                  numeric: false,
-                                  onSort: (columnIndex, ascending) {
-                                    setState(() {
-                                      sort = !sort;
-                                    });
-                                    if (sort) {
-                                      listItems.sort((a, b) =>
-                                          a.reference!.compareTo(b.reference!));
-                                    } else {
-                                      listItems.sort((a, b) =>
-                                          b.reference!.compareTo(a.reference!));
-                                    }
-                                  },
-                                ),
-                                DataColumn(
                                   tooltip: 'Descripcion',
                                   label: const Icon(Icons.description),
                                   numeric: false,
@@ -999,26 +963,9 @@ class _HomeViewState extends State<HomeView> {
                                   },
                                 ),
                                 DataColumn(
-                                  tooltip: 'Precio',
-                                  label: const Icon(Icons.monetization_on),
-                                  numeric: false,
-                                  onSort: (columnIndex, ascending) {
-                                    setState(() {
-                                      sort = !sort;
-                                    });
-                                    if (sort) {
-                                      listItems.sort((a, b) =>
-                                          a.price!.compareTo(b.price!));
-                                    } else {
-                                      listItems.sort((a, b) =>
-                                          b.price!.compareTo(a.price!));
-                                    }
-                                  },
-                                ),
-                                DataColumn(
                                   tooltip: 'Cantidad',
                                   label: const Icon(
-                                      Icons.production_quantity_limits),
+                                      Icons.production_quantity_limits_sharp), //Icons.production_quantity_limits),
                                   numeric: true,
                                   onSort: (columnIndex, ascending) {
                                     setState(() {
@@ -1030,23 +977,6 @@ class _HomeViewState extends State<HomeView> {
                                     } else {
                                       listItems.sort((a, b) =>
                                           b.quantity!.compareTo(a.quantity!));
-                                    }
-                                  },
-                                ),
-                                DataColumn(
-                                  tooltip: 'Total',
-                                  label: const Icon(Icons.money),
-                                  numeric: true,
-                                  onSort: (columnIndex, ascending) {
-                                    setState(() {
-                                      sort = !sort;
-                                    });
-                                    if (sort) {
-                                      listItems.sort((a, b) =>
-                                          a.total!.compareTo(b.total!));
-                                    } else {
-                                      listItems.sort((a, b) =>
-                                          b.total!.compareTo(a.total!));
                                     }
                                   },
                                 ),
@@ -1237,6 +1167,7 @@ class _HomeViewState extends State<HomeView> {
                                                 onPressed: () {
                                                   isPdf = true;
                                                   if (isTraslado == true) {
+                                                    print('traslado -- ESTOY ACA');
                                                     realizarTraslado();
                                                   } else if (isInvF = true) {
                                                     enviarListPdf();
@@ -1391,11 +1322,19 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  limpiarCampos() {
+
+  limpiarControllers() {
     setState(() {
       itemController.text = '';
       descController.text = '';
       cantController.text = '';
+      FocusScope.of(context).unfocus();
+    });
+  }
+
+
+  limpiarCampos() {
+    setState(() {
       statusError = '';
       isFactura = false;
       isBoleta = false;
@@ -1645,7 +1584,7 @@ class _HomeViewState extends State<HomeView> {
         */
         double? priceItem =
             await ItemMethods().getPriceItem(itemController.text);
-        if (priceItem == null) {
+        if (priceItem == null && isVenta == true) {
           /*
           *EL ITEM NO TIENE PRECIO
           */
@@ -1664,7 +1603,7 @@ class _HomeViewState extends State<HomeView> {
                       TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            limpiarCampos();
+                            limpiarControllers();
                           },
                           child: const Text('Cancelar')),
                     ],
@@ -1763,7 +1702,7 @@ class _HomeViewState extends State<HomeView> {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        limpiarCampos();
+                        limpiarControllers();
                       },
                       child: const Text('Cancelar'),
                     ),
@@ -2039,7 +1978,7 @@ class _HomeViewState extends State<HomeView> {
           );
         });
       }
-      limpiarCampos();
+      limpiarControllers();
       calcularTotalItems();
     } catch (e) {
       print('addItemList: $e');
@@ -2185,28 +2124,27 @@ class _HomeViewState extends State<HomeView> {
               listItems[i].quantity!,
               '0',
             );
+            print('GUARDO ITEMS');
             listItemsTemp.add(
               ItemTemp(
-                reference: listItems[i].reference,
+                reference: listItems[i].reference ?? '',
                 qr: listItems[i].qr,
                 code: listItems[i].code,
                 description: listItems[i].description,
                 quantity: listItems[i].quantity,
-                price: listItems[i].price,
-                total: listItems[i].total,
+                price: listItems[i].price ?? '0',
+                total: listItems[i].total ?? '0',
               ),
             );
           }
           if (isPdf == true) {
             PdfMethods().createPdf(nombreQuienCompra, newIdMovement,
-                listItemsVentaTemp, tipoMovimiento);
+                listItemsTemp, tipoMovimiento);
           }
         }
       }
       setState(() {
         status = true;
-        listItems.clear();
-        listItemsVenta.clear();
         totalItems = 0;
         totalVenta = 0.0;
         quienCompra.clear();

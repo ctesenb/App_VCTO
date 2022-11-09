@@ -32,12 +32,6 @@ class DataSource extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(
-          Text(item.reference!),
-        ),
-        DataCell(
-          Text(item.qr!),
-        ),
         DataCell(Container(
           constraints: const BoxConstraints(minWidth: 200, maxWidth: 300),
           child: SingleChildScrollView(
@@ -46,13 +40,7 @@ class DataSource extends DataTableSource {
           ),
         )),
         DataCell(
-          Text(item.price!),
-        ),
-        DataCell(
           Text(item.quantity!),
-        ),
-        DataCell(
-          Text(item.total!),
         ),
         DataCell(IconButton(
           alignment: Alignment.centerLeft,
