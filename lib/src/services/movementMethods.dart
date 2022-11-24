@@ -67,14 +67,18 @@ class MovementMethods {
 
   Future<int?> insertMovement(String idMovement, String nameBusiness, String rucClient, String client, String user, String movementType, String totalSoles, String totalDollars, String nameType) async {
     try {
+      int? id;
       String? time = await DateTimeMethods().getTime();
       String? date = await DateTimeMethods().getDate();
       var db = await Mysql().getConnection();
-      String sql = 'START TRANSACTION;INSERT INTO list_mov (codigo, emisor, rucreceptor, receptor, usuario, hora, fecha, mov, totalsoles, totaldolares, tipo) VALUES ("prueba", "prueba", "prueba", "client", "user", "time", "date", "movementType", "totalSoles", "totalDollars", "nameType");SELECT LAST_INSERT_ID();COMMIT;';
-      var results = await db.query(sql);
+      String sql1 = 'INSERT INTO list_mov (codigo, emisor, rucreceptor, receptor, usuario, hora, fecha, mov, totalsoles, totaldolares, tipo) VALUES ("$idMovement", "$nameBusiness", "$rucClient", "$client", "$user", "$time", "$date", "$movementType", "$totalSoles", "$totalDollars", "$nameType");';
+      String sql2 = 'SELECT LAST_INSERT_ID();';
+      await db.query(sql1);
+      var results = await db.query(sql2);
       results.forEach((row) {
-        return row[0];
+        id = row[0];
       });
+      return id;
     } catch (e) {
       print('insertMovement: $e');
     }
@@ -82,7 +86,7 @@ class MovementMethods {
 
   Future<void> insertMovementDetails(String idAutomatico, String codeMov, String reference, String externalCode, String description, String count, String totalPrice) async {
     try {
-      var sql = 'INSERT INTO list_vcto (id_mov, code_mov, dato, qr, descrip, cantidad, preciototal) VALUES ("$idAutomatico", "$codeMov", "$reference", "$externalCode", "$description", "$count", "$totalPrice")';
+      var sql = 'INSERT INTO list_vcto (id_cabecera, dato, qr, descrip, cantidad, preciototal, code_mov) VALUES ("$idAutomatico", "$reference", "$externalCode", "$description", "$count", "$totalPrice", "$codeMov")';
       var db = await Mysql().getConnection();
       await db.query(sql);
     } catch (e) {
