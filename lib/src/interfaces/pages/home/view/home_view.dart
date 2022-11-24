@@ -964,8 +964,8 @@ class _HomeViewState extends State<HomeView> {
                                 ),
                                 DataColumn(
                                   tooltip: 'Cantidad',
-                                  label: const Icon(
-                                      Icons.production_quantity_limits_sharp), //Icons.production_quantity_limits),
+                                  label: const Icon(Icons
+                                      .production_quantity_limits_sharp), //Icons.production_quantity_limits),
                                   numeric: true,
                                   onSort: (columnIndex, ascending) {
                                     setState(() {
@@ -1167,7 +1167,8 @@ class _HomeViewState extends State<HomeView> {
                                                 onPressed: () {
                                                   isPdf = true;
                                                   if (isTraslado == true) {
-                                                    print('traslado -- ESTOY ACA');
+                                                    print(
+                                                        'traslado -- ESTOY ACA');
                                                     realizarTraslado();
                                                   } else if (isInvF = true) {
                                                     enviarListPdf();
@@ -1322,7 +1323,6 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-
   limpiarControllers() {
     setState(() {
       itemController.text = '';
@@ -1331,7 +1331,6 @@ class _HomeViewState extends State<HomeView> {
       FocusScope.of(context).unfocus();
     });
   }
-
 
   limpiarCampos() {
     setState(() {
@@ -2022,34 +2021,12 @@ class _HomeViewState extends State<HomeView> {
         if (tipoMovimiento == 'Venta') {
           var priceChange = await ApiMethods().getChange();
           var total = 0.0;
-          for (var i = 0; i < listItemsVenta.length; i++) {
-            total += double.parse(listItemsVenta[i].total!);
-            listItemsVentaTemp.add(
-              ItemTemp(
-                reference: listItemsVenta[i].reference,
-                qr: listItemsVenta[i].qr,
-                code: listItemsVenta[i].code,
-                description: listItemsVenta[i].description,
-                quantity: listItemsVenta[i].quantity,
-                price: listItemsVenta[i].price,
-                total: listItemsVenta[i].total,
-              ),
-            );
-            MovementMethods().insertMovementDetails(
-              newIdMovement,
-              listItemsVenta[i].reference!,
-              listItemsVenta[i].qr!,
-              listItemsVenta[i].description!,
-              listItemsVenta[i].quantity!,
-              listItemsVenta[i].total!,
-            );
-          }
           var totalsoles = double.parse((total).toStringAsFixed(2)).toString();
           var totaldolares =
               double.parse((total / priceChange!).toStringAsFixed(2))
                   .toString();
           if (isBoleta == true) {
-            MovementMethods().insertMovement(
+            int? idautomatico = await MovementMethods().insertMovement(
                 newIdMovement,
                 nombre,
                 quienCompra.text,
@@ -2059,6 +2036,29 @@ class _HomeViewState extends State<HomeView> {
                 totalsoles,
                 totaldolares,
                 'Pre-Boleta');
+            for (var i = 0; i < listItemsVenta.length; i++) {
+              total += double.parse(listItemsVenta[i].total!);
+              listItemsVentaTemp.add(
+                ItemTemp(
+                  reference: listItemsVenta[i].reference,
+                  qr: listItemsVenta[i].qr,
+                  code: listItemsVenta[i].code,
+                  description: listItemsVenta[i].description,
+                  quantity: listItemsVenta[i].quantity,
+                  price: listItemsVenta[i].price,
+                  total: listItemsVenta[i].total,
+                ),
+              );
+              MovementMethods().insertMovementDetails(
+                idautomatico.toString(),
+                newIdMovement,
+                listItemsVenta[i].reference!,
+                listItemsVenta[i].qr!,
+                listItemsVenta[i].description!,
+                listItemsVenta[i].quantity!,
+                listItemsVenta[i].total!,
+              );
+            }
             PdfMethods().createPdfMix(
                 totalsoles,
                 totaldolares,
@@ -2067,7 +2067,7 @@ class _HomeViewState extends State<HomeView> {
                 listItemsVentaTemp,
                 'PRE BOLETA ELECTRONICA');
           } else if (isFactura == true) {
-            MovementMethods().insertMovement(
+            int? idautomatico = await MovementMethods().insertMovement(
                 newIdMovement,
                 nombre,
                 quienCompra.text,
@@ -2077,6 +2077,29 @@ class _HomeViewState extends State<HomeView> {
                 totalsoles,
                 totaldolares,
                 'Pre-Factura');
+            for (var i = 0; i < listItemsVenta.length; i++) {
+              total += double.parse(listItemsVenta[i].total!);
+              listItemsVentaTemp.add(
+                ItemTemp(
+                  reference: listItemsVenta[i].reference,
+                  qr: listItemsVenta[i].qr,
+                  code: listItemsVenta[i].code,
+                  description: listItemsVenta[i].description,
+                  quantity: listItemsVenta[i].quantity,
+                  price: listItemsVenta[i].price,
+                  total: listItemsVenta[i].total,
+                ),
+              );
+              MovementMethods().insertMovementDetails(
+                idautomatico.toString(),
+                newIdMovement,
+                listItemsVenta[i].reference!,
+                listItemsVenta[i].qr!,
+                listItemsVenta[i].description!,
+                listItemsVenta[i].quantity!,
+                listItemsVenta[i].total!,
+              );
+            }
             PdfMethods().createPdfMix(
                 totalsoles,
                 totaldolares,
@@ -2085,7 +2108,7 @@ class _HomeViewState extends State<HomeView> {
                 listItemsVentaTemp,
                 'PRE FACTURA ELECTRONICA');
           } else if (isProforma == true) {
-            MovementMethods().insertMovement(
+            int? idautomatico = await MovementMethods().insertMovement(
                 newIdMovement,
                 nombre,
                 quienCompra.text,
@@ -2095,6 +2118,29 @@ class _HomeViewState extends State<HomeView> {
                 totalsoles,
                 totaldolares,
                 'Proforma');
+            for (var i = 0; i < listItemsVenta.length; i++) {
+              total += double.parse(listItemsVenta[i].total!);
+              listItemsVentaTemp.add(
+                ItemTemp(
+                  reference: listItemsVenta[i].reference,
+                  qr: listItemsVenta[i].qr,
+                  code: listItemsVenta[i].code,
+                  description: listItemsVenta[i].description,
+                  quantity: listItemsVenta[i].quantity,
+                  price: listItemsVenta[i].price,
+                  total: listItemsVenta[i].total,
+                ),
+              );
+              MovementMethods().insertMovementDetails(
+                idautomatico.toString(),
+                newIdMovement,
+                listItemsVenta[i].reference!,
+                listItemsVenta[i].qr!,
+                listItemsVenta[i].description!,
+                listItemsVenta[i].quantity!,
+                listItemsVenta[i].total!,
+              );
+            }
             PdfMethods().createPdfMix(
                 totalsoles,
                 totaldolares,
@@ -2104,7 +2150,7 @@ class _HomeViewState extends State<HomeView> {
                 'PROFORMA ELECTRONICA');
           }
         } else {
-          MovementMethods().insertMovement(
+          int? idautomatico = await MovementMethods().insertMovement(
               newIdMovement,
               nombre,
               quienCompra.text,
@@ -2117,6 +2163,7 @@ class _HomeViewState extends State<HomeView> {
 
           for (var i = 0; i < listItems.length; i++) {
             MovementMethods().insertMovementDetails(
+              idautomatico.toString(),
               newIdMovement,
               listItems[i].reference!,
               listItems[i].qr!,

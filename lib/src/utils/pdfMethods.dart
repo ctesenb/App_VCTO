@@ -170,10 +170,10 @@ class PdfMethods {
     var fecha = await DateTimeMethods().getDate();
     if(tipoPdf == 'TrasS'){
       tipoPdf = 'Traslado de Salida';
-    } else if (tipoPdf == 'TrasE'){
-      tipoPdf = 'Traslado de Entrada';
     } else if (tipoPdf == 'InvF'){
       tipoPdf = 'Inventario Fisico';
+    } else if (tipoPdf == 'TrasI'){
+      tipoPdf = 'Traslado Ingreso';
     }
     doc.addPage(
       pw.MultiPage(

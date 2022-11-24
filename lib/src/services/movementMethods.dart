@@ -1,6 +1,8 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'package:app1c/src/connection/external_connection.dart';
 import 'package:app1c/src/services/datetimeMethods.dart';
+import 'package:mysql1/mysql1.dart';
 
 class MovementMethods {
   MovementMethods();
@@ -11,7 +13,7 @@ class MovementMethods {
     try {
       var random = Random.secure();
       var values = List<int>.generate(length, (i) => random.nextInt(26));
-      var id1 = '';
+      String? id1 = null;
       if (isTicket == true) {
         id1 = 'BO';
       } else if (isBill == true) {
@@ -25,10 +27,12 @@ class MovementMethods {
       } else if (movementType == 'TrasI') {
         id1 = 'TI';
       } else if (movementType == 'Otro') {
-        id1 = 'OS';
+        id1 = 'OT';
+      } else if (movementType == 'InvF') {
+        id1 = 'IF';
       }
       var id2 = String.fromCharCodes(values.map((index) => index + 65));
-      return '$id1$id2';
+      return id1!+id2;
     } catch (e) {
       print('createNewIdMovement: $e');
     }
@@ -36,7 +40,7 @@ class MovementMethods {
 
   Future<String?> getIdMovementIdMovement(String idMovement) async {
     try {
-      var sql = 'SELECT id FROM list_mov WHERE id = "$idMovement"';
+      var sql = 'SELECT codigo FROM list_mov WHERE codigo = "$idMovement"';
       var db = await Mysql().getConnection();
       var results = await db.query(sql);
       results.forEach((row) {
@@ -61,21 +65,24 @@ class MovementMethods {
     }
   }
 
-  Future<void> insertMovement(String idMovement, String nameBusiness, String rucClient, String client, String user, String movementType, String totalSoles, String totalDollars, String nameType) async {
+  Future<int?> insertMovement(String idMovement, String nameBusiness, String rucClient, String client, String user, String movementType, String totalSoles, String totalDollars, String nameType) async {
     try {
       String? time = await DateTimeMethods().getTime();
       String? date = await DateTimeMethods().getDate();
-      var sql = 'INSERT INTO list_mov (id, emisor, rucreceptor, receptor, usuario, hora, fecha, mov, totalsoles, totaldolares, tipo) VALUES ("$idMovement", "$nameBusiness", "$rucClient", "$client", "$user", "$time", "$date", "$movementType", "$totalSoles", "$totalDollars", "$nameType")';
       var db = await Mysql().getConnection();
-      await db.query(sql);
+      String sql = 'START TRANSACTION;INSERT INTO list_mov (codigo, emisor, rucreceptor, receptor, usuario, hora, fecha, mov, totalsoles, totaldolares, tipo) VALUES ("prueba", "prueba", "prueba", "client", "user", "time", "date", "movementType", "totalSoles", "totalDollars", "nameType");SELECT LAST_INSERT_ID();COMMIT;';
+      var results = await db.query(sql);
+      results.forEach((row) {
+        return row[0];
+      });
     } catch (e) {
       print('insertMovement: $e');
     }
   }
 
-  Future<void> insertMovementDetails(String idMovement, String reference, String externalCode, String description, String count, String totalPrice) async {
+  Future<void> insertMovementDetails(String idAutomatico, String codeMov, String reference, String externalCode, String description, String count, String totalPrice) async {
     try {
-      var sql = 'INSERT INTO list_vcto (id, dato, qr, descrip, cantidad, preciototal) VALUES ("$idMovement", "$reference", "$externalCode", "$description", "$count", "$totalPrice")';
+      var sql = 'INSERT INTO list_vcto (id_mov, code_mov, dato, qr, descrip, cantidad, preciototal) VALUES ("$idAutomatico", "$codeMov", "$reference", "$externalCode", "$description", "$count", "$totalPrice")';
       var db = await Mysql().getConnection();
       await db.query(sql);
     } catch (e) {
