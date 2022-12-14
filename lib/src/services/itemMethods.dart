@@ -72,13 +72,23 @@ class ItemMethods {
 
   Future<String?> getDescriptionItem(String externalCode) async {
     try {
+      print('externalCode: $externalCode');
       var returnString;
-      var sql = 'SELECT F5NOMPRO FROM IF5PLA WHERE F5BARRAS = "$externalCode"';
+      var sql = "SELECT F5NOMPRO FROM IF5PLA WHERE F5BARRAS = '$externalCode'";
       var db = await Mysql().getConnection();
       var results = await db.query(sql);
       results.forEach((row) {
         returnString = row[0];
       });
+      if (returnString == null) {
+        var sql1 =
+            "select F5NOMPRO FROM IF5PLA where F5CODPRO = '$externalCode'";
+        var results1 = await db.query(sql1);
+        results1.forEach((row) {
+          returnString = row[0];
+        });
+      }
+      print('returnString: $returnString');
       return returnString;
     } catch (e) {
       print('getDescriptionItem: $e');
